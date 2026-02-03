@@ -1,0 +1,1 @@
+import '../css/app.css'; import '../js/admin/app.js';
