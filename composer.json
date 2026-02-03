@@ -1,0 +1,12 @@
+{
+  "name": "corbidev/wp-corbidev-theme-starter",
+  "description": "Thème WordPress CorbiDev de base, basé sur le Kernel wp-corbidev-kernel-theme.",
+  "type": "wordpress-theme",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.4",
+    "corbidev/wp-corbidev-kernel-theme": "^1.0"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
