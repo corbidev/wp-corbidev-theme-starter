@@ -1,67 +1,46 @@
-name: Build & Release Theme
+name: Build Vite Assets
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches:
+      - main
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           persist-credentials: true
 
-      - name: Extract version from tag
-        id: tag
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Sync style.css version
-        run: |
-          sed -i "s/^Version: .*/Version: ${{ steps.tag.outputs.version }}/" style.css
-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-          git add style.css
-          git commit -m "chore(release): v${{ steps.tag.outputs.version }}"
-
+      # 2️⃣ Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # 3️⃣ Install
       - name: Install dependencies
         run: npm install
 
-      - name: Build Vite assets
+      # 4️⃣ Build
+      - name: Build assets
         run: npm run build
 
+      # 5️⃣ Commit assets/dist if changed
       - name: Commit build assets
         run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
           if [ -n "$(git status --porcelain assets/dist)" ]; then
             git add assets/dist
-            git commit -m "build(vite): v${{ steps.tag.outputs.version }}"
+            git commit -m "build(vite): update assets"
+            git push
+          else
+            echo "No build changes to commit"
           fi
-
-      - name: Push commits
-        run: git push
-
-  release:
-    needs: build   # 🔒 clé du blocage
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
