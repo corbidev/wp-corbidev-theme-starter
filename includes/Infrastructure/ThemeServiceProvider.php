@@ -8,66 +8,65 @@ use CorbiDev\Kernel\Contracts\ServiceProviderInterface;
 use CorbiDev\Kernel\Container\Container;
 use CorbiDev\Kernel\Events\EventDispatcher;
 use CorbiDev\Kernel\Events\Event;
+use CorbiDev\Theme\Services\OptimizedAssetsService;
+use CorbiDev\Theme\Services\WordPressCleanupService;
 use CorbiDev\Theme\Services\ThemeContextService;
 use CorbiDev\Theme\Services\NavigationService;
-use CorbiDev\Theme\Services\AssetsManifestService;
 use CorbiDev\Theme\Services\CurrentUserService;
 use CorbiDev\Theme\Services\ThemeConfigService;
 use CorbiDev\Theme\Services\ThemeConfigWriterService;
 
 /**
- * Service Provider principal du thème CorbiDev
+ * Service Provider principal du thème CorbiDev - Version Optimisée
  *
  * Enregistre tous les services du thème dans le conteneur
- * et configure le cycle de vie de l'application.
+ * avec optimisations de performance intégrées.
  */
 final class ThemeServiceProvider implements ServiceProviderInterface
 {
     /**
      * Enregistrement des services dans le conteneur
      *
-     * Phase d'enregistrement : création et injection des services
-     * dans le conteneur sans exécuter de logique métier.
-     *
      * @param Container $container Conteneur d'injection de dépendances
      * @return void
      */
     public function register(Container $container): void
     {
-        // Enregistrement du contexte thème
+        // Services métier
         $container->set(
             ThemeContextService::class,
             new ThemeContextService('starter')
         );
 
-        // Enregistrement du service de navigation
         $container->set(
             NavigationService::class,
             new NavigationService()
         );
 
-        // Enregistrement du service de gestion des assets
-        $container->set(
-            AssetsManifestService::class,
-            new AssetsManifestService()
-        );
-
-        // Enregistrement du service utilisateur courant
         $container->set(
             CurrentUserService::class,
             new CurrentUserService()
         );
 
-        // Enregistrement du service de configuration
         $container->set(
             ThemeConfigService::class,
             new ThemeConfigService()
         );
 
-        // Enregistrement du service d'écriture de configuration
         $container->set(
             ThemeConfigWriterService::class,
             new ThemeConfigWriterService()
+        );
+
+        // Services d'optimisation
+        $container->set(
+            OptimizedAssetsService::class,
+            new OptimizedAssetsService()
+        );
+
+        $container->set(
+            WordPressCleanupService::class,
+            new WordPressCleanupService()
         );
 
         // Configuration des événements kernel
@@ -75,36 +74,60 @@ final class ThemeServiceProvider implements ServiceProviderInterface
     }
 
     /**
-     * Boot du thème
-     *
-     * Phase de boot : enregistrement des hooks WordPress
-     * et initialisation de la logique métier.
+     * Boot du thème avec optimisations
      *
      * @param Container $container Conteneur d'injection de dépendances
      * @return void
      */
     public function boot(Container $container): void
     {
-        // Enregistrement des menus WordPress
+        // === NAVIGATION ===
         add_action(
             'after_setup_theme',
             [$container->get(NavigationService::class), 'registerMenus']
         );
 
-        // Dispatch d'un événement personnalisé après boot du thème
+        // === OPTIMISATIONS WORDPRESS ===
+        $cleanup = $container->get(WordPressCleanupService::class);
+        
+        // Activer toutes les optimisations d'un coup
+        add_action('init', [$cleanup, 'enableAllOptimizations']);
+        
+        // Désactiver XML-RPC (sécurité)
+        add_action('init', [$cleanup, 'disableXmlRpc']);
+
+        // === ASSETS OPTIMISÉS ===
+        $assets = $container->get(OptimizedAssetsService::class);
+        
+        // Précharger les ressources critiques dans le <head>
+        add_action('wp_head', [$assets, 'preloadCriticalAssets'], 1);
+        
+        // Charger les assets frontend
+        add_action('wp_enqueue_scripts', function () use ($assets) {
+            if (!is_admin()) {
+                $assets->enqueueFrontendAssets();
+            }
+        }, 10);
+        
+        // Charger les assets admin
+        add_action('admin_enqueue_scripts', function () use ($assets) {
+            $assets->enqueueAdminAssets();
+        }, 10);
+
+        // === SUPPORT THÈME ===
+        $this->registerThemeSupport();
+
+        // === ÉVÉNEMENT PERSONNALISÉ ===
         /** @var EventDispatcher $dispatcher */
         $dispatcher = $container->get(EventDispatcher::class);
         $dispatcher->dispatch('theme.booted', [
             'theme' => 'starter',
-            'services_registered' => 6,
+            'optimizations_enabled' => true,
         ]);
     }
 
     /**
      * Enregistre les listeners sur les événements du kernel
-     *
-     * Configure l'écoute des événements système pour logging,
-     * monitoring et hooks personnalisés.
      *
      * @param Container $container Conteneur d'injection de dépendances
      * @return void
@@ -114,11 +137,11 @@ final class ThemeServiceProvider implements ServiceProviderInterface
         /** @var EventDispatcher $dispatcher */
         $dispatcher = $container->get(EventDispatcher::class);
 
-        // Logger le boot complet du kernel en mode debug
+        // Logger le boot complet du kernel
         $dispatcher->on('kernel.booted', function (Event $event) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 error_log(sprintf(
-                    '[CorbiDev Theme Starter] Kernel booted successfully with %d providers',
+                    '[CorbiDev Optimized] Kernel booted with %d providers',
                     $event->get('providers_count', 0)
                 ));
             }
@@ -128,10 +151,47 @@ final class ThemeServiceProvider implements ServiceProviderInterface
         $dispatcher->on('kernel.provider.registering', function (Event $event) {
             if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
                 error_log(sprintf(
-                    '[CorbiDev Theme Starter] Registering provider: %s',
+                    '[CorbiDev Optimized] Registering: %s',
                     $event->get('provider', 'unknown')
                 ));
             }
+        });
+    }
+
+    /**
+     * Enregistre le support des fonctionnalités WordPress
+     *
+     * @return void
+     */
+    private function registerThemeSupport(): void
+    {
+        add_action('after_setup_theme', function () {
+            // Support des images mises en avant
+            add_theme_support('post-thumbnails');
+
+            // Support du titre dynamique
+            add_theme_support('title-tag');
+
+            // Support HTML5
+            add_theme_support('html5', [
+                'search-form',
+                'comment-form',
+                'comment-list',
+                'gallery',
+                'caption',
+                'style',
+                'script',
+            ]);
+
+            // Support des liens de flux automatiques
+            add_theme_support('automatic-feed-links');
+
+            // Support responsive embeds
+            add_theme_support('responsive-embeds');
+
+            // Désactiver l'éditeur de blocs si non utilisé
+            // add_theme_support('disable-custom-colors');
+            // add_theme_support('disable-custom-font-sizes');
         });
     }
 }

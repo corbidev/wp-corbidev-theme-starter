@@ -1,27 +1,78 @@
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { resolve } from 'path'
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [vue()],
-  root: 'assets',
-  base: mode === 'development'
-    ? '/'
-    : '/wp-content/themes/wp-corbidev-theme-starter/assets/dist/',
+
   build: {
-    outDir: 'dist',
+    outDir: 'assets/dist',
     emptyOutDir: true,
     manifest: true,
+
     rollupOptions: {
       input: {
-        front: path.resolve(__dirname, 'assets/vite/front.js'),
-        admin: path.resolve(__dirname, 'assets/vite/admin.js'),
-      }
-    }
+        front: resolve(__dirname, 'assets/vite/front.js'),
+        admin: resolve(__dirname, 'assets/vite/admin.js'),
+      },
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue'],
+        },
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        format: 'es',
+      },
+    },
+
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        passes: 2,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      format: {
+        comments: false,
+      },
+    },
+
+    chunkSizeWarningLimit: 500,
+    sourcemap: false,
+    target: 'es2020',
+    cssCodeSplit: true,
   },
+
+  /**
+   * IMPORTANT :
+   * ❌ Aucun Tailwind / Autoprefixer ici
+   * ✅ Tout passe par postcss.config.js
+   */
+  css: {
+    postcss: {},
+  },
+
+  optimizeDeps: {
+    include: ['vue'],
+  },
+
   server: {
-    port: 5173,
-    strictPort: true
-  }
-}))
+    port: 3000,
+    strictPort: true,
+    hmr: {
+      overlay: true,
+    },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  },
+
+  esbuild: {
+    drop: ['debugger'],
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true,
+  },
+})
