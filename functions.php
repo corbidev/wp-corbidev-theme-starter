@@ -30,6 +30,7 @@ use CorbiDev\Kernel\Theme\Kernel;
  */
 Kernel::boot([
     'theme' => 'starter',
+    'loading_strategy' => 'progressive',
     'providers' => [
         CorbiDev\Theme\Infrastructure\ThemeServiceProvider::class,
     ],
