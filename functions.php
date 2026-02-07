@@ -3,6 +3,8 @@
  * Theme bootstrap file
  *
  * Point d’entrée unique du thème CorbiDev.
+ * - Boot du Kernel
+ * - Bridges thème → Kernel
  *
  * @package CorbiDevTheme
  */
@@ -11,14 +13,18 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use CorbiDev\Theme\Kernel;
+use CorbiDev\Kernel\Loading\CriticalCssService;
+
 /*
 |--------------------------------------------------------------------------
 | Kernel bootstrap
 |--------------------------------------------------------------------------
+|
+| Le Kernel est une dépendance PHP partagée.
+| Il ne produit aucun rendu HTML.
+|
 */
-
-use CorbiDev\Theme\Kernel;
-use CorbiDev\Kernel\Loading\CriticalCssService;
 
 if (class_exists(Kernel::class)) {
     Kernel::boot([
@@ -30,10 +36,17 @@ if (class_exists(Kernel::class)) {
 |--------------------------------------------------------------------------
 | Theme → Kernel bridge
 |--------------------------------------------------------------------------
+|
+| Les templates WordPress n’accèdent JAMAIS directement au Kernel.
+| Toute interaction passe par une fonction globale du thème.
+|
 */
 
 /**
  * Injecte le CSS critique dans le <head>.
+ *
+ * - Le Kernel calcule le CSS (PHP pur)
+ * - Le thème gère le HTML
  *
  * @return void
  */
@@ -44,15 +57,19 @@ function corbidev_critical_css(): void
     }
 
     /**
-     * IMPORTANT :
-     * Le service CriticalCssService dépend du chemin du thème.
-     * On injecte explicitement le contexte ici.
+     * Le Kernel attend un CHEMIN DE FICHIER,
+     * jamais un dossier.
      */
-    $service = new CriticalCssService(get_template_directory());
+    $criticalCssFile = get_template_directory() . '/assets/css/critical.css';
 
-    $css = $service->getCriticalCss();
+    if (!is_file($criticalCssFile)) {
+        return;
+    }
 
-    if ($css === '') {
+    $service = new CriticalCssService($criticalCssFile);
+    $css = $service->render();
+
+    if (!is_string($css) || $css === '') {
         return;
     }
 
@@ -61,14 +78,16 @@ function corbidev_critical_css(): void
     echo '</style>';
 }
 
-/*
-|--------------------------------------------------------------------------
-| Sécurité minimale
-|--------------------------------------------------------------------------
-*/
 
 add_action('after_setup_theme', static function (): void {
     if (!defined('ABSPATH')) {
         exit;
     }
 });
+
+
+
+
+
+
+

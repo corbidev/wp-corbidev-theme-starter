@@ -24,12 +24,7 @@ if (!defined('ABSPATH')) {
 <?php
     /**
      * Hook WordPress officiel
-     * DOIT être appelé en premier après <body>
+     * DOIT être appelé immédiatement après <body>
      */
     wp_body_open();
-
-    /**
-     * Loader progressif (thème)
-     */
-    corbidev_progressive_loader();
 ?>
