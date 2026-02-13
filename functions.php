@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use CorbiDev\Theme\Kernel;
+use CorbiDev\Kernel\Theme\Kernel;
 use CorbiDev\Kernel\Loading\CriticalCssService;
 
 /*
