@@ -2,26 +2,19 @@
 namespace CorbiDev\Theme\Admin\Providers;
 
 use CorbiDev\Theme\Admin\Contracts\ProviderInterface;
-use CorbiDev\Theme\Admin\Services\SettingsRepository;
 use CorbiDev\Theme\Admin\Support\CapabilityGuard;
 
 /**
- * Gestion complète Apparence (Media + Color Picker).
+ * Gestion Apparence (Media + Color picker).
  */
 class AppearanceProvider implements ProviderInterface
 {
-    private SettingsRepository $repository;
-
-    public function __construct(SettingsRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
     public function register(): void
     {
         add_action('admin_menu', [$this, 'menu']);
         add_action('admin_init', [$this, 'settings']);
         add_action('admin_enqueue_scripts', [$this, 'assets']);
+        add_action('wp_head', [$this, 'injectCssVariables']);
     }
 
     public function menu(): void
@@ -76,14 +69,36 @@ class AppearanceProvider implements ProviderInterface
     public function logoField(): void
     {
         $value = esc_attr(get_option('corbidev_logo'));
-        echo '<input type="text" id="corbidev_logo" name="corbidev_logo" value="' . $value . '" class="regular-text" />';
+        echo '<input type="text" id="corbidev_logo" name="corbidev_logo" value="' . $value . '" class="regular-text" /> ';
+        echo '<button class="button" id="corbidev_logo_button">' . esc_html__('Select', 'corbidevtheme') . '</button>';
+        ?>
+        <script>
+        jQuery(function($){
+            $('#corbidev_logo_button').click(function(e){
+                e.preventDefault();
+                var frame = wp.media({multiple:false});
+                frame.on('select', function(){
+                    var attachment = frame.state().get('selection').first().toJSON();
+                    $('#corbidev_logo').val(attachment.url);
+                });
+                frame.open();
+            });
+            $('.color-field').wpColorPicker();
+        });
+        </script>
+        <?php
     }
 
     public function colorField(): void
     {
         $value = esc_attr(get_option('corbidev_primary_color'));
         echo '<input type="text" name="corbidev_primary_color" value="' . $value . '" class="color-field" />';
-        echo "<script>jQuery(function($){$('.color-field').wpColorPicker();});</script>";
+    }
+
+    public function injectCssVariables(): void
+    {
+        $primary = esc_attr(get_option('corbidev_primary_color', '#000000'));
+        echo "<style>:root{--corbidev-primary:{$primary};}</style>";
     }
 
     public function render(): void

@@ -6,8 +6,5 @@ namespace CorbiDev\Theme\Admin\Contracts;
  */
 interface ProviderInterface
 {
-    /**
-     * Enregistre les hooks WordPress.
-     */
     public function register(): void;
 }

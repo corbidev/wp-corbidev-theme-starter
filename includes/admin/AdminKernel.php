@@ -5,41 +5,23 @@ use CorbiDev\Theme\Admin\Contracts\ProviderInterface;
 use CorbiDev\Theme\Admin\Services\SettingsRepository;
 
 /**
- * Kernel principal de la couche Admin.
- *
- * Gère l’auto-découverte des Providers.
+ * Kernel principal Admin CorbiDev.
  */
 class AdminKernel
 {
-    /**
-     * Repository des options.
-     */
     private SettingsRepository $repository;
 
-    /**
-     * Constructeur.
-     */
     public function __construct()
     {
         $this->repository = new SettingsRepository();
     }
 
-    /**
-     * Démarre le système Admin.
-     *
-     * @return void
-     */
     public function boot(): void
     {
-        add_action('admin_init', [$this, 'loadProviders']);
+        $this->loadProviders();
     }
 
-    /**
-     * Charge automatiquement tous les Providers.
-     *
-     * @return void
-     */
-    public function loadProviders(): void
+    private function loadProviders(): void
     {
         foreach (glob(__DIR__ . '/Providers/*.php') as $file) {
 

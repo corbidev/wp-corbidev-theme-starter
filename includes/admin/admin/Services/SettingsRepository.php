@@ -2,7 +2,7 @@
 namespace CorbiDev\Theme\Admin\Services;
 
 /**
- * Repository centralisé des options thème (multisite ready).
+ * Repository des options (multisite ready).
  */
 class SettingsRepository
 {
