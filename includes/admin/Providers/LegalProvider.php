@@ -2,42 +2,33 @@
 namespace CorbiDev\Theme\Admin\Providers;
 
 use CorbiDev\Theme\Admin\Contracts\ProviderInterface;
-use CorbiDev\Theme\Admin\Services\LegalPageManager;
+use CorbiDev\Theme\Admin\Services\PageAutoCreator;
 
-/**
- * Gestion légale complète (Terms, Privacy, Cookies).
- */
 class LegalProvider implements ProviderInterface
 {
-    private $repository;
-
-    public function __construct($repository)
-    {
-        $this->repository = $repository;
-    }
+    public function __construct(private $repository) {}
 
     public function register(): void
     {
-        add_action('admin_init', [$this, 'registerSettings']);
-        add_action('admin_post_corbidev_generate_legal', [$this, 'generatePages']);
+        add_action('init', [$this, 'createPages']);
+        add_action('wp_footer', [$this, 'cookieBanner']);
     }
 
-    public function registerSettings(): void
+    public function createPages(): void
     {
-        register_setting('corbidev_legal_group', 'corbidev_enable_legal');
-        register_setting('corbidev_legal_group', 'corbidev_enable_cookies');
+        $creator = new PageAutoCreator();
+
+        $creator->createIfMissing(
+            esc_html__('Terms of Use', 'corbidevtheme'),
+            esc_html__('Default terms content.', 'corbidevtheme'),
+            'terms-of-use'
+        );
     }
 
-    public function generatePages(): void
+    public function cookieBanner(): void
     {
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $manager = new LegalPageManager();
-        $manager->createDefaultPages();
-
-        wp_redirect(admin_url('themes.php?page=corbidev-theme-settings'));
-        exit;
+        echo '<div id="corbidev-cookie-banner" style="display:none;">';
+        echo esc_html__('This website uses cookies.', 'corbidevtheme');
+        echo '</div>';
     }
 }

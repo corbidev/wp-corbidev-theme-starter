@@ -6,19 +6,17 @@ namespace CorbiDev\Theme\Admin\Services;
  */
 class SitemapBuilder
 {
-    public function build(int $parent = 0): string
+    public function build(): string
     {
-        $pages = get_pages(['parent' => $parent, 'sort_column' => 'menu_order']);
-        if (!$pages) return '';
-
+        $pages = get_pages(['sort_column' => 'menu_order']);
         $html = '<ul>';
-        foreach ($pages as $page) {
-            $html .= '<li><a href="' . esc_url(get_permalink($page)) . '">' . esc_html($page->post_title) . '</a>';
-            $html .= $this->build($page->ID);
-            $html .= '</li>';
-        }
-        $html .= '</ul>';
 
+        foreach ($pages as $page) {
+            $html .= '<li><a href="' . esc_url(get_permalink($page)) . '">'
+                . esc_html($page->post_title) . '</a></li>';
+        }
+
+        $html .= '</ul>';
         return $html;
     }
 }
