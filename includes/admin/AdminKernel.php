@@ -6,7 +6,7 @@ use CorbiDev\Theme\Admin\Services\SettingsRepository;
 
 /**
  * Kernel principal de la couche Admin.
- * 
+ *
  * Gère l’auto-découverte des Providers.
  */
 class AdminKernel

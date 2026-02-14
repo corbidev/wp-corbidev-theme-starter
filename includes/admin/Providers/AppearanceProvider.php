@@ -1,4 +1,3 @@
-
 <?php
 namespace CorbiDev\Theme\Admin\Providers;
 
@@ -31,10 +30,10 @@ class AppearanceProvider implements ProviderInterface
     public function render(): void
     {
         ?>
-        <div class="wrap">
-            <h1><?php echo esc_html__('Theme Settings', 'corbidevtheme'); ?></h1>
-            <p><?php echo esc_html__('Enterprise configuration module ready.', 'corbidevtheme'); ?></p>
-        </div>
-        <?php
+<div class="wrap">
+    <h1><?php echo esc_html__('Theme Settings', 'corbidevtheme'); ?></h1>
+    <p><?php echo esc_html__('Enterprise configuration module ready.', 'corbidevtheme'); ?></p>
+</div>
+<?php
     }
 }
