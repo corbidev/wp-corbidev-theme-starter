@@ -83,9 +83,11 @@ add_action('after_setup_theme', static function (): void {
     if (!defined('ABSPATH')) {
         exit;
     }
+    if (is_admin()) {
+        $kernel = new \CorbiDev\Theme\Admin\AdminKernel();
+        $kernel->boot();
+    }
 });
-
-
 
 
 
