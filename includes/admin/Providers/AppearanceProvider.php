@@ -2,29 +2,16 @@
 namespace CorbiDev\Theme\Admin\Providers;
 
 use CorbiDev\Theme\Admin\Contracts\ProviderInterface;
-use CorbiDev\Theme\Admin\Services\SettingsRepository;
 use CorbiDev\Theme\Admin\Support\CapabilityGuard;
 
-/**
- * Extension complète de la gestion Apparence.
- * Ajoute Media Picker, Color Picker et sections Settings API.
- * Rétro-compatible avec la version précédente.
- */
 class AppearanceProvider implements ProviderInterface
 {
-    private SettingsRepository $repository;
-
-    public function __construct(SettingsRepository $repository)
-    {
-        $this->repository = $repository;
-    }
+    public function __construct($repository){}
 
     public function register(): void
     {
         add_action('admin_menu', [$this, 'menu']);
-        add_action('admin_init', [$this, 'settings']);
         add_action('admin_enqueue_scripts', [$this, 'assets']);
-        add_action('wp_head', [$this, 'injectCssVariables']);
     }
 
     public function menu(): void
@@ -40,110 +27,68 @@ class AppearanceProvider implements ProviderInterface
         );
     }
 
-    public function settings(): void
-    {
-        register_setting('corbidev_group', 'corbidev_logo');
-        register_setting('corbidev_group', 'corbidev_primary_color');
-        register_setting('corbidev_group', 'corbidev_secondary_color');
-
-        add_settings_section(
-            'corbidev_brand',
-            esc_html__('Brand Settings', 'corbidevtheme'),
-            '__return_false',
-            'corbidev-theme-settings'
-        );
-
-        add_settings_field(
-            'corbidev_logo',
-            esc_html__('Logo', 'corbidevtheme'),
-            [$this, 'logoField'],
-            'corbidev-theme-settings',
-            'corbidev_brand'
-        );
-
-        add_settings_field(
-            'corbidev_primary_color',
-            esc_html__('Primary Color', 'corbidevtheme'),
-            [$this, 'primaryColorField'],
-            'corbidev-theme-settings',
-            'corbidev_brand'
-        );
-
-        add_settings_field(
-            'corbidev_secondary_color',
-            esc_html__('Secondary Color', 'corbidevtheme'),
-            [$this, 'secondaryColorField'],
-            'corbidev-theme-settings',
-            'corbidev_brand'
-        );
-    }
-
     public function assets(): void
     {
-        wp_enqueue_media();
-        wp_enqueue_style('wp-color-picker');
-        wp_enqueue_script('wp-color-picker');
-    }
+        wp_enqueue_script(
+            'corbidev-admin-ui',
+            get_template_directory_uri() . '/includes/admin/Assets/js/admin-ui.js',
+            [],
+            '1.0.0',
+            true
+        );
 
-    public function logoField(): void
-    {
-        $value = esc_attr(get_option('corbidev_logo'));
-        echo '<input type="text" id="corbidev_logo" name="corbidev_logo" value="' . $value . '" class="regular-text" />';
-        echo '<button class="button" id="corbidev_logo_button">' . esc_html__('Select', 'corbidevtheme') . '</button>';
-        ?>
-        <script>
-        jQuery(document).ready(function($){
-            $('#corbidev_logo_button').on('click', function(e){
-                e.preventDefault();
-                var frame = wp.media({ title: 'Select Logo', multiple: false });
-                frame.on('select', function(){
-                    var attachment = frame.state().get('selection').first().toJSON();
-                    $('#corbidev_logo').val(attachment.url);
-                });
-                frame.open();
-            });
-        });
-        </script>
-        <?php
-    }
+        wp_enqueue_style(
+            'corbidev-admin-ui',
+            get_template_directory_uri() . '/includes/admin/Assets/css/admin-ui.css',
+            [],
+            '1.0.0'
+        );
 
-    public function primaryColorField(): void
-    {
-        $value = esc_attr(get_option('corbidev_primary_color'));
-        echo '<input type="text" name="corbidev_primary_color" value="' . $value . '" class="color-field" />';
-        ?>
-<script>
-jQuery(function($){
-    $('.color-field').wpColorPicker();
-});
-</script>
-<?php
-    }
-
-    public function secondaryColorField(): void
-    {
-        $value = esc_attr(get_option('corbidev_secondary_color'));
-        echo '<input type="text" name="corbidev_secondary_color" value="' . $value . '" class="color-field" />';
-    }
-
-    public function injectCssVariables(): void
-    {
-        $primary = esc_attr(get_option('corbidev_primary_color', '#000000'));
-        $secondary = esc_attr(get_option('corbidev_secondary_color', '#ffffff'));
-        echo "<style>:root{--corbidev-primary:{$primary};--corbidev-secondary:{$secondary};}</style>";
+        wp_localize_script('corbidev-admin-ui', 'CorbiDevAdmin', [
+            'restUrl' => esc_url_raw(rest_url('corbidev/v1/options')),
+            'nonce'   => wp_create_nonce('wp_rest')
+        ]);
     }
 
     public function render(): void
     {
         ?>
-        <div class="wrap">
+        <div class="wrap corbidev-admin">
             <h1><?php echo esc_html__('Theme Settings', 'corbidevtheme'); ?></h1>
-            <form method="post" action="options.php">
-                <?php
-                settings_fields('corbidev_group');
-                do_settings_sections('corbidev-theme-settings');
-                submit_button();
-                ?>
+
+            <div class="corbidev-tabs">
+                <button type="button" data-tab="brand" class="active"><?php echo esc_html__('Brand', 'corbidevtheme'); ?></button>
+                <button type="button" data-tab="legal"><?php echo esc_html__('Legal', 'corbidevtheme'); ?></button>
+                <button type="button" data-tab="sitemap"><?php echo esc_html__('Sitemap', 'corbidevtheme'); ?></button>
+            </div>
+
+            <form id="corbidev-admin-form">
+
+                <div class="corbidev-tab-content active" data-content="brand">
+                    <label><?php echo esc_html__('Primary Color', 'corbidevtheme'); ?></label>
+                    <input type="text" name="corbidev_primary_color" value="<?php echo esc_attr(get_option('corbidev_primary_color')); ?>" />
+                </div>
+
+                <div class="corbidev-tab-content" data-content="legal">
+                    <label>
+                        <input type="checkbox" name="corbidev_enable_cookies" <?php checked(get_option('corbidev_enable_cookies'), 1); ?> />
+                        <?php echo esc_html__('Enable Cookies Banner', 'corbidevtheme'); ?>
+                    </label>
+                </div>
+
+                <div class="corbidev-tab-content" data-content="sitemap">
+                    <p><?php echo esc_html__('Sitemap generated automatically.', 'corbidevtheme'); ?></p>
+                </div>
+
+                <div class="corbidev-actions">
+                    <button type="button" id="corbidev-save" class="button button-primary">
+                        <?php echo esc_html__('Save', 'corbidevtheme'); ?>
+                    </button>
+                    <button type="button" id="corbidev-cancel" class="button">
+                        <?php echo esc_html__('Cancel', 'corbidevtheme'); ?>
+                    </button>
+                </div>
+
             </form>
         </div>
         <?php
