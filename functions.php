@@ -83,13 +83,26 @@ add_action('after_setup_theme', static function (): void {
     if (!defined('ABSPATH')) {
         exit;
     }
-    if (is_admin()) {
+
+    if (!is_admin()) {
+        return;
+    }
+
+    if (class_exists(\CorbiDev\Theme\Admin\AdminKernel::class)) {
         $kernel = new \CorbiDev\Theme\Admin\AdminKernel();
         $kernel->boot();
     }
+
+    if (
+        class_exists(\CorbiDev\Theme\Infrastructure\Admin\ThemeConfigAdmin::class)
+        && class_exists(\CorbiDev\Theme\Services\ThemeConfigService::class)
+        && class_exists(\CorbiDev\Theme\Services\ThemeConfigWriterService::class)
+    ) {
+        $themeConfigAdmin = new \CorbiDev\Theme\Infrastructure\Admin\ThemeConfigAdmin(
+            new \CorbiDev\Theme\Services\ThemeConfigService(),
+            new \CorbiDev\Theme\Services\ThemeConfigWriterService()
+        );
+
+        $themeConfigAdmin->register();
+    }
 });
-
-
-
-
-
