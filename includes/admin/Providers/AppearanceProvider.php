@@ -111,7 +111,13 @@ class AppearanceProvider implements ProviderInterface
     {
         $value = esc_attr(get_option('corbidev_primary_color'));
         echo '<input type="text" name="corbidev_primary_color" value="' . $value . '" class="color-field" />';
-        echo "<script>jQuery(function($){$('.color-field').wpColorPicker();});</script>";
+        ?>
+<script>
+jQuery(function($){
+    $('.color-field').wpColorPicker();
+});
+</script>
+<?php
     }
 
     public function secondaryColorField(): void

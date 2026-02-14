@@ -2,11 +2,13 @@
 namespace CorbiDev\Theme\Admin\Providers;
 
 use CorbiDev\Theme\Admin\Contracts\ProviderInterface;
-use CorbiDev\Theme\Admin\Support\CapabilityGuard;
 
+/**
+ * REST sécurisé CorbiDev.
+ */
 class RestProvider implements ProviderInterface
 {
-    public function __construct(private $repository) {}
+    public function __construct($repository) {}
 
     public function register(): void
     {
@@ -17,15 +19,17 @@ class RestProvider implements ProviderInterface
     {
         register_rest_route('corbidev/v1', '/options', [
             'methods'  => 'GET',
-            'callback' => [$this, 'get'],
-            'permission_callback' => fn() => CapabilityGuard::canManage(),
+            'callback' => [$this, 'getOptions'],
+            'permission_callback' => function () {
+                return current_user_can('manage_options');
+            }
         ]);
     }
 
-    public function get()
+    public function getOptions()
     {
         return rest_ensure_response([
-            'status' => 'ready'
+            'primary_color' => get_option('corbidev_primary_color')
         ]);
     }
 }
