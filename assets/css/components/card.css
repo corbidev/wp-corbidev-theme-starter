@@ -1,0 +1,23 @@
+@layer components {
+ .cards-grid {
+    @apply max-w-7xl mx-auto p-6 grid md:grid-cols-3 gap-6 bg-gray-100 dark:bg-black
+  }
+
+  .card {
+  @apply h-full flex flex-col rounded-xl shadow-md p-6 transition duration-300;
+  background-color: var(--color-surface);
+}
+
+  .card:hover {
+    @apply shadow-lg;
+  }
+
+  .card-title {
+    @apply text-xl font-semibold mb-2;
+  }
+
+  .card-description {
+    @apply text-sm opacity-80;
+  }
+
+}

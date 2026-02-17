@@ -1,1 +1,0 @@
-Infrastructure layer – WordPress adapters only.

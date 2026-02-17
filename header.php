@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
      * CSS critique inline
      * (bridge thème → Kernel)
      */
-    corbidev_critical_css();
+   // corbidev_critical_css();
     ?>
 
     <?php wp_head(); ?>
