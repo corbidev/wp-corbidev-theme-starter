@@ -8,7 +8,6 @@ yarn.lock
 pnpm-lock.yaml
 package-lock.json
 
-dist/
 build/
 public/build/
 .parcel-cache/
