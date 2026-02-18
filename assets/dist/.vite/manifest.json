@@ -1,0 +1,31 @@
+{
+  "_app-!~{004}~.js": {
+    "file": "assets/app-Brdaprj_.css",
+    "src": "_app-!~{004}~.js"
+  },
+  "_vue-vendor-CnSy4XEj.js": {
+    "file": "assets/vue-vendor-CnSy4XEj.js",
+    "name": "vue-vendor"
+  },
+  "assets/vite/admin.js": {
+    "file": "assets/admin-CH_UtnNw.js",
+    "name": "admin",
+    "src": "assets/vite/admin.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-Brdaprj_.css"
+    ]
+  },
+  "assets/vite/front.js": {
+    "file": "assets/front-C80Tfj3L.js",
+    "name": "front",
+    "src": "assets/vite/front.js",
+    "isEntry": true,
+    "imports": [
+      "_vue-vendor-CnSy4XEj.js"
+    ],
+    "css": [
+      "assets/app-Brdaprj_.css"
+    ]
+  }
+}
