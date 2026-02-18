@@ -1,1 +1,0 @@
-/* empty css            */import{o as a,c as t,t as i,a as p}from"./vue-vendor-CnSy4XEj.js";const s={class:"text-primary"},e={__name:"App",props:{initialData:Object},setup:p=>(e,n)=>(a(),t("p",s,i(p.initialData.description),1))},n=document.getElementById("app");n&&p(e,{initialData:JSON.parse(n.dataset.items||"{}")}).mount(n);

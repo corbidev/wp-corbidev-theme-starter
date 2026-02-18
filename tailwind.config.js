@@ -5,6 +5,12 @@ export default {
     "./assets/js/**/*.js",
     "./templates/**/*.php"
   ],
+  safelist: [
+    'btn',
+    'btn-primary',
+    'btn-ghost',
+    'btn-primary:hover'
+  ],
   theme: {
     extend: {
       colors: {
