@@ -17,7 +17,7 @@ class AssetLoaderService
     public function __construct()
     {
         $this->manifestPath = get_template_directory() . '/dist/.vite/manifest.json';
-        $this->distUri      = get_template_directory_uri() . '/dist/assets';
+        $this->distUri      = get_template_directory_uri() . '/dist/';
     }
 
     public function register(): void

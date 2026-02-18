@@ -1,1 +1,13 @@
-import{defineConfig}from'vite';import vue from'@vitejs/plugin-vue';export default defineConfig({plugins:[vue()],build:{outDir:'dist',emptyOutDir:true,manifest:true,rollupOptions:{input:'assets/js/app.js'}}});
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+export default defineConfig(
+    {
+        plugins: [vue()],
+        build: {
+            outDir: 'dist',
+            emptyOutDir: true, manifest: true,
+            rollupOptions: { input: 'assets/js/app.js' },
+            manifest: true,
+            rollupOptions: { input: 'assets/js/app.js' }
+        }
+    });
