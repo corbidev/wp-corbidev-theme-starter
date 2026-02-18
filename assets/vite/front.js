@@ -1,2 +1,0 @@
-import '../css/app.css'; 
-import '../js/front/app.js';

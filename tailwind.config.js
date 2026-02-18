@@ -1,9 +1,8 @@
 export default {
   darkMode: 'class',
   content: [
-    "./assets/js/**/*.vue",
-    "./assets/js/**/*.js",
-    "./templates/**/*.php"
+  "./assets/src/**/*.{js,vue}",
+  "./templates/**/*.php"
   ],
   safelist: [
     'btn',

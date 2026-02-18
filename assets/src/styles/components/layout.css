@@ -1,0 +1,7 @@
+.layout-main {
+  @apply container mx-auto p-6;
+}
+
+.title-main {
+  @apply text-3xl font-bold;
+}

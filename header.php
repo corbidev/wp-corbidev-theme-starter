@@ -16,7 +16,11 @@ if (!defined('ABSPATH')) {
      */
    // corbidev_critical_css();
     ?>
-
+<script>
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.classList.add('dark')
+}
+</script>
     <?php wp_head(); ?>
 </head>
 

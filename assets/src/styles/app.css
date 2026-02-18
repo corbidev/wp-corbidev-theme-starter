@@ -1,6 +1,7 @@
 @import './components/base.css';
 @import './components/button.css';
 @import './components/card.css';
+@import './components/layout.css';
 
 @tailwind base;
 @tailwind components;
