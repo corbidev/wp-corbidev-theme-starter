@@ -33,11 +33,11 @@ $this->distUri      = get_template_directory_uri() . '/assets/dist/';
 
         $manifest = json_decode(file_get_contents($this->manifestPath), true);
 
-        if (!isset($entry = $manifest['app.js'])) {
-            return;
-        }
+if (!is_array($manifest) || !isset($manifest['app.js'])) {
+    return;
+}
 
-        $entry = $manifest['app.js'];
+$entry = $manifest['app.js'];
 
         // JS
         wp_enqueue_script(
