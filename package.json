@@ -2,10 +2,11 @@
   "name": "wp-corbidev-theme-starter",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build"
-  },
+ "scripts": {
+  "dev": "vite",
+  "build": "vite build --mode production",
+  "build:dev": "vite build --mode development"
+},
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
     "autoprefixer": "^10.4.0",

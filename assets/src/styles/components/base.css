@@ -7,13 +7,6 @@
     --color-primary: theme('colors.primary.DEFAULT');
   }
 
-  .dark {
-    --color-bg: theme('colors.background.dark');
-    --color-surface: theme('colors.surface.dark');
-    --color-text: theme('colors.text.dark');
-    --color-primary: theme('colors.primary.light');
-  }
-
   body {
     @apply min-h-screen transition-colors duration-300;
     background-color: var(--color-bg);
@@ -23,12 +16,11 @@
 
 @layer components {
 
-  .layout-container {
-    @apply max-w-6xl mx-auto px-6 py-12;
-  }
-
-  .section-title {
-    @apply text-3xl font-bold mb-8;
+  .dark {
+    --color-bg: theme('colors.background.dark');
+    --color-surface: theme('colors.surface.dark');
+    --color-text: theme('colors.text.dark');
+    --color-primary: theme('colors.primary.light');
   }
 
 }
