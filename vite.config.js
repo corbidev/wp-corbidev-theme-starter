@@ -8,16 +8,12 @@ export default defineConfig(({ mode }) => ({
     outDir: 'assets/dist',
     emptyOutDir: true,
     manifest: true,
-
-    // 🔥 Toujours générer les maps
     sourcemap: true,
-
-    // 🔥 Minifier uniquement en prod
     minify: mode === 'production',
 
     rollupOptions: {
       input: {
-        app: path.resolve(__dirname, 'assets/src/main.js'),
+        app: 'assets/src/main.js',
       }
     }
   }

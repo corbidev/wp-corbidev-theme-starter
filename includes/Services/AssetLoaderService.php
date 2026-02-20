@@ -16,7 +16,7 @@ class AssetLoaderService
 
     public function __construct()
     {
-        $this->manifestPath = get_template_directory() . '/assets/dist/manifest.json';
+        $this->manifestPath = get_template_directory() . '/assets/dist/.vite/manifest.json';
 $this->distUri      = get_template_directory_uri() . '/assets/dist/';
     }
 
@@ -26,20 +26,21 @@ $this->distUri      = get_template_directory_uri() . '/assets/dist/';
     }
 
     public function enqueue(): void
-    {
-        if (!file_exists($this->manifestPath)) {
-            return;
-        }
+{
+    if (!file_exists($this->manifestPath)) {
+        return;
+    }
 
-        $manifest = json_decode(file_get_contents($this->manifestPath), true);
+    $manifest = json_decode(file_get_contents($this->manifestPath), true);
 
-if (!is_array($manifest) || !isset($manifest['app.js'])) {
-    return;
-}
+    if (!is_array($manifest) || !isset($manifest['assets/src/main.js'])) {
+        return;
+    }
 
-$entry = $manifest['app.js'];
+    $entry = $manifest['assets/src/main.js'];
 
-        // JS
+    // JS
+    if (!empty($entry['file'])) {
         wp_enqueue_script(
             'corbidev-app',
             $this->distUri . $entry['file'],
@@ -47,17 +48,18 @@ $entry = $manifest['app.js'];
             null,
             true
         );
+    }
 
-        // CSS
-        if (!empty($entry['css'])) {
-            foreach ($entry['css'] as $cssFile) {
-                wp_enqueue_style(
-                    'corbidev-style',
-                    $this->distUri . $cssFile,
-                    [],
-                    null
-                );
-            }
+    // CSS
+    if (!empty($entry['css']) && is_array($entry['css'])) {
+        foreach ($entry['css'] as $cssFile) {
+            wp_enqueue_style(
+                'corbidev-style',
+                $this->distUri . $cssFile,
+                [],
+                null
+            );
         }
     }
+}
 }
