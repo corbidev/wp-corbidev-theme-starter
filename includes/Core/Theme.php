@@ -5,6 +5,7 @@ namespace CorbiDev\Core;
 use CorbiDev\Services\NavigationService;
 use CorbiDev\Services\ThemeContextService;
 use CorbiDev\Services\AssetLoaderService;
+use CorbiDev\Services\ThemePreferenceService;
 
 class Theme
 {
@@ -29,10 +30,13 @@ class Theme
     public function registerServices(): void
     {
         $navigation = new NavigationService();
-    $this->context = new ThemeContextService($navigation);
+        $this->context = new ThemeContextService($navigation);
 
-    $assets = new AssetLoaderService();
-    $assets->register();
+        $assets = new AssetLoaderService();
+        $assets->register();
+
+        $themePreference = new ThemePreferenceService();
+        $themePreference->register();
     }
 
     public function getContext(): ThemeContextService

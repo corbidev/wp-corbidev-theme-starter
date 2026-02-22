@@ -11,6 +11,8 @@ if (!defined('ABSPATH')) {
  */
 class AssetLoaderService
 {
+    private const USER_THEME_META_KEY = 'corbidev_theme_mode';
+
     private string $manifestPath;
     private string $distUri;
 
@@ -54,6 +56,13 @@ class AssetLoaderService
                 null,
                 true
             );
+
+            wp_localize_script('corbidev-app', 'corbidevThemePreference', [
+                'isLoggedIn' => is_user_logged_in(),
+                'userTheme'  => $this->getCurrentUserThemePreference(),
+                'restUrl'    => rest_url('corbidev/v1/theme-preference'),
+                'nonce'      => wp_create_nonce('wp_rest'),
+            ]);
         }
 
         // CSS
@@ -67,5 +76,16 @@ class AssetLoaderService
                 );
             }
         }
+    }
+
+    private function getCurrentUserThemePreference(): ?string
+    {
+        if (!is_user_logged_in()) {
+            return null;
+        }
+
+        $theme = get_user_meta(get_current_user_id(), self::USER_THEME_META_KEY, true);
+
+        return in_array($theme, ['light', 'dark'], true) ? $theme : null;
     }
 }
