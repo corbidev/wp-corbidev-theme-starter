@@ -1,6 +1,4 @@
 <script setup>
-import BoutonSombreClair from './components/BoutonSombreClair.vue'
-
 defineProps({
   initialData: Object
 })
@@ -11,7 +9,5 @@ defineProps({
     <p class="text-primary">
       {{ initialData?.description }}
     </p>
-
-    <BoutonSombreClair />
   </div>
 </template>
