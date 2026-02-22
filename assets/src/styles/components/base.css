@@ -7,14 +7,18 @@
     --color-primary: theme('colors.primary.DEFAULT');
   }
 
+  html{
+    @apply !mt-0;
+  }
   body {
     @apply min-h-screen flex flex-col transition-colors duration-300;
     background-color: var(--color-bg);
     color: var(--color-text);
   }
-main {
-  @apply flex-1;
-}
+
+  main {
+    @apply flex-1;
+  }
 }
 
 @layer components {

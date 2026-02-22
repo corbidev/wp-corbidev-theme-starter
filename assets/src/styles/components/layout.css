@@ -9,7 +9,7 @@
   }
 
   .layout-main {
-    @apply container mx-auto p-6;
+    @apply container my-0 mx-auto p-0;
   }
 
   .title-main {
